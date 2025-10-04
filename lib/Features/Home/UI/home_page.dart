@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:restaurant_app/Data/restaurant_food.dart';
+import 'package:restaurant_app/Data/restaurant_food_data.dart';
+import 'package:restaurant_app/Features/Cart/UI/cart.dart';
+import 'package:restaurant_app/Features/Home/UI/Widget/order_fab.dart';
 import 'package:restaurant_app/Features/Home/UI/Widget/restaurant_card_details.dart';
 import 'package:restaurant_app/Features/Home/bloc/home_bloc.dart';
+import 'package:restaurant_app/Features/Home/models/restaurant_data_models.dart';
 import 'package:restaurant_app/Features/Profile/profile.dart';
+import 'package:restaurant_app/Features/Wishlist/UI/wishlist.dart';
 import 'package:restaurant_app/Features/restaurant_food/UI/restaurant_food_detail.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -16,11 +20,14 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final List<String> images = RestaurantFoodData.images;
-  final List<Map<String, dynamic>> category =
-      RestaurantFoodData.horizontalItems;
-  final List<Map<String, dynamic>> restaurantsDetails =
-      RestaurantFoodData.restaurantDetails;
   final HomeBloc homebloc = HomeBloc();
+
+  @override
+  void initState() {
+    homebloc.add(HomeInitialEvent());
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<HomeBloc, HomeState>(
@@ -38,16 +45,20 @@ class _MyHomePageState extends State<MyHomePage> {
             context,
             MaterialPageRoute(
               builder: (context) => RestaurantFoodCard(
-                restaurantDetails: restaurantsDetails[state.index],
+                restaurantDetails: state.restaurantDetails,
               ),
             ),
           );
-        }
-        else if(state is HomeToWishlist){
-
-        }
-        else if(state is HomeToCart){
-          
+        } else if (state is HomeToWishlist) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => Wishlist()),
+          );
+        } else if (state is HomeToCart) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => Cart()),
+          );
         }
       },
       builder: (context, state) {
@@ -159,55 +170,60 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
               ),
-              SliverAppBar(
-                backgroundColor: Colors.white,
-                elevation: 2,
-                pinned: true,
-                titleSpacing: 0,
-                title: const SearchBar(),
-                toolbarHeight: 80,
-                bottom: PreferredSize(
-                  preferredSize: const Size.fromHeight(150),
-                  child: SizedBox(
-                    height: 150,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: category.length,
-                      itemBuilder: (context, index) {
-                        final item = category[index];
-                        return Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(color: Colors.grey.shade400),
-                            ),
-                            child: Column(
-                              children: [
-                                Image.network(
-                                  item["image"],
-                                  height: 100,
-                                  width: 100,
-                                ),
-                                const SizedBox(height: 5),
-                                Text(
-                                  item["name"],
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: item["name"] == "See All"
-                                        ? Colors.blueAccent
-                                        : null,
+              if (state is HomeLoading)
+                SliverToBoxAdapter(
+                  child: Center(child: CircularProgressIndicator()),
+                )
+              else if (state is HomeLoaded)
+                SliverAppBar(
+                  backgroundColor: Colors.white,
+                  elevation: 2,
+                  pinned: true,
+                  titleSpacing: 0,
+                  title: const SearchBar(),
+                  toolbarHeight: 80,
+                  bottom: PreferredSize(
+                    preferredSize: const Size.fromHeight(150),
+                    child: SizedBox(
+                      height: 150,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: state.horizontalItems.length,
+                        itemBuilder: (context, index) {
+                          final item = state.horizontalItems[index];
+                          return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(color: Colors.grey.shade400),
+                              ),
+                              child: Column(
+                                children: [
+                                  Image.network(
+                                    item.image,
+                                    height: 100,
+                                    width: 100,
                                   ),
-                                ),
-                              ],
+                                  const SizedBox(height: 5),
+                                  Text(
+                                    item.name,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: item.name == "See All"
+                                          ? Colors.blueAccent
+                                          : null,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        );
-                      },
+                          );
+                        },
+                      ),
                     ),
                   ),
                 ),
-              ),
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -217,33 +233,49 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
               ),
-              SliverList(
-                delegate: SliverChildBuilderDelegate((
-                  BuildContext context,
-                  int index,
-                ) {
-                  return GestureDetector(
-                    onTap: () {
-                      homebloc.add(HomeToRestaurantButtonClicked(index: index));
-                    },
-                    child: RestaurantCard(
-                      restaurantsDetails: restaurantsDetails[index],
-                    ),
-                  );
-                }, childCount: restaurantsDetails.length),
-              ),
+              if (state is HomeLoading)
+                SliverToBoxAdapter(
+                  child: Center(child: CircularProgressIndicator()),
+                )
+              else if (state is HomeLoaded)
+                SliverList(
+                  delegate: SliverChildBuilderDelegate((
+                    BuildContext context,
+                    int index,
+                  ) {
+                    final restaurant = state.restaurants[index];
+                    return GestureDetector(
+                      onTap: () {
+                        homebloc.add(
+                          HomeToRestaurantButtonClicked(
+                            restaurantDetails: restaurant,
+                          ),
+                        );
+                      },
+                      child: RestaurantCard(restaurantsDetails: restaurant, homebloc: homebloc,),
+                    );
+                  }, childCount: state.restaurants.length),
+                )
+              else if (state is HomeError)
+                SliverToBoxAdapter(
+                  child: Center(child: Text("Error Loading Data")),
+                ),
             ],
           ),
+          floatingActionButton: OrderFAB(homebloc: homebloc),
         );
       },
     );
   }
 }
 
-class RestaurantCard extends StatefulWidget {
-  const RestaurantCard({super.key, required this.restaurantsDetails});
 
-  final Map<String, dynamic> restaurantsDetails;
+
+class RestaurantCard extends StatefulWidget {
+  const RestaurantCard({super.key, required this.restaurantsDetails, required this.homebloc});
+
+  final RestaurantDataModels restaurantsDetails;
+  final HomeBloc homebloc;
 
   @override
   State<RestaurantCard> createState() => _RestaurantCardState();
@@ -278,7 +310,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
               child: Stack(
                 children: [
                   CarouselSlider(
-                    items: widget.restaurantsDetails["imageurl"].map<Widget>((
+                    items: widget.restaurantsDetails.imageurl.map<Widget>((
                       image,
                     ) {
                       return Image.network(
@@ -310,7 +342,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
                         borderRadius: BorderRadius.circular(5),
                       ),
                       child: Text(
-                        "${widget.restaurantsDetails["dishname"][_currentImageIndex]} - Rs. ${widget.restaurantsDetails["price"][_currentImageIndex]}",
+                        "${widget.restaurantsDetails.dishname[_currentImageIndex]} - Rs. ${widget.restaurantsDetails.price[_currentImageIndex]}",
                         style: TextStyle(color: Colors.white),
                       ),
                     ),
@@ -318,7 +350,9 @@ class _RestaurantCardState extends State<RestaurantCard> {
                   Positioned(
                     right: 10,
                     child: IconButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        widget.homebloc.add(HomeProductWishlistButtonClicked());
+                      },
                       icon: Icon(Icons.bookmark_add_outlined),
                       color: Colors.white,
                     ),

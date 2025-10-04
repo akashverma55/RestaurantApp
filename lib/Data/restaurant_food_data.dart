@@ -90,7 +90,7 @@ class RestaurantFoodData {
     },
   ];
 
-  static final List<Map<String, dynamic>> restaurantDetails = [
+  static List<Map<String, dynamic>> restaurantDetails = [
     {
       "dishname": [
         "Veg Biryani",

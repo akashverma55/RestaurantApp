@@ -6,8 +6,11 @@ part 'food_state.dart';
 
 class FoodBloc extends Bloc<FoodEvent, FoodState> {
   FoodBloc() : super(FoodInitial()) {
-    on<FoodEvent>((event, emit) {
-      // TODO: implement event handler
-    });
+    on<OrderButtonClicked>(orderButtonClicked);
+  }
+
+  void orderButtonClicked(OrderButtonClicked event, Emitter<FoodState> emit ){
+    print("Order Button Clicked from food menu page");
+    emit(FoodMenuToOrder());
   }
 }

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:restaurant_app/Features/Home/bloc/home_bloc.dart';
+import 'package:restaurant_app/Features/Home/models/restaurant_data_models.dart';
 
 class RestaurantCardDetails extends StatelessWidget {
   const RestaurantCardDetails({
@@ -6,7 +8,7 @@ class RestaurantCardDetails extends StatelessWidget {
     required this.restaurantDetails,
   });
 
-  final Map<String,dynamic> restaurantDetails;
+  final RestaurantDataModels restaurantDetails;
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +22,7 @@ class RestaurantCardDetails extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  restaurantDetails["name"],
+                  restaurantDetails.name,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 24,
@@ -40,7 +42,7 @@ class RestaurantCardDetails extends StatelessWidget {
                 child: Row(
                   children: [
                     Text(
-                      restaurantDetails["rating"],
+                      restaurantDetails.rating,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 16,
@@ -63,7 +65,7 @@ class RestaurantCardDetails extends StatelessWidget {
             children: [
               Icon(Icons.timer_sharp),
               Text(
-                " ${restaurantDetails["time"]} | ${restaurantDetails["distance"]} km",
+                " ${restaurantDetails.time} | ${restaurantDetails.distance} km",
               ),
             ],
           ),
@@ -73,7 +75,7 @@ class RestaurantCardDetails extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                ...restaurantDetails["special"].map((special) {
+                ...restaurantDetails.special.map((special) {
                   return Padding(
                     padding: const EdgeInsets.only(right: 8.0),
                     child: Container(
@@ -100,7 +102,7 @@ class RestaurantCardDetails extends StatelessWidget {
               Icon(Icons.discount, color: Colors.blueAccent),
               SizedBox(width: 5),
               Text(
-                restaurantDetails["offer"],
+                restaurantDetails.offer,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Colors.blueAccent,

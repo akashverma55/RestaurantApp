@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:restaurant_app/Features/Home/models/restaurant_data_models.dart';
 
 class RestaurantFoodCard extends StatelessWidget {
   const RestaurantFoodCard({super.key, required this.restaurantDetails});
-  final Map<String, dynamic> restaurantDetails;
+  final RestaurantDataModels restaurantDetails;
 
   @override
   Widget build(BuildContext context) {
@@ -11,7 +12,7 @@ class RestaurantFoodCard extends StatelessWidget {
         actions: [
           IconButton(
             onPressed: () {},
-            icon: const Icon(Icons.favorite_outline),
+            icon: const Icon(Icons.fastfood),
           ),
           IconButton(onPressed: () {}, icon: const Icon(Icons.share)),
         ],
@@ -26,7 +27,7 @@ class RestaurantFoodCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    restaurantDetails["name"],
+                    restaurantDetails.name,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 24,
@@ -46,7 +47,7 @@ class RestaurantFoodCard extends StatelessWidget {
                   child: Row(
                     children: [
                       Text(
-                        restaurantDetails["rating"],
+                        restaurantDetails.rating,
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 16,
@@ -65,7 +66,7 @@ class RestaurantFoodCard extends StatelessWidget {
               children: [
                 Icon(Icons.timer_sharp),
                 Text(
-                  " ${restaurantDetails["time"]} | ${restaurantDetails["distance"]} km",
+                  " ${restaurantDetails.time} | ${restaurantDetails.distance} km",
                 ),
               ],
             ),
@@ -75,7 +76,7 @@ class RestaurantFoodCard extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  ...restaurantDetails["special"].map((special) {
+                  ...restaurantDetails.special.map((special) {
                     return Padding(
                       padding: const EdgeInsets.only(right: 8.0),
                       child: Container(
@@ -102,7 +103,7 @@ class RestaurantFoodCard extends StatelessWidget {
                 Icon(Icons.discount, color: Colors.blueAccent),
                 SizedBox(width: 5),
                 Text(
-                  restaurantDetails["offer"],
+                  restaurantDetails.offer,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.blueAccent,
@@ -121,7 +122,7 @@ class RestaurantFoodCard extends StatelessWidget {
             SizedBox(height: 10),
             Expanded(
               child: ListView.separated(
-                itemCount: restaurantDetails["imageurl"].length,
+                itemCount: restaurantDetails.imageurl.length,
                 separatorBuilder: (context, index) => Divider(),
                 itemBuilder: (context, index) {
                   return SizedBox(
@@ -135,17 +136,17 @@ class RestaurantFoodCard extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               SizedBox(height: 10),
-                              Text(restaurantDetails["dishname"][index],
+                              Text(restaurantDetails.dishname[index],
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 22,
                               ),),
-                              Text("₹${restaurantDetails["price"][index]}",style: TextStyle(
+                              Text("₹${restaurantDetails.price[index]}",style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
                               )),
                               SizedBox(height: 10),
-                              Text(restaurantDetails["description"][index],style: TextStyle(
+                              Text(restaurantDetails.description[index],style: TextStyle(
                                 fontWeight: FontWeight.w400,
                                 fontSize: 14,
                                 color: Colors.black.withOpacity(.7)
@@ -175,7 +176,7 @@ class RestaurantFoodCard extends StatelessWidget {
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(20),
                                 ),
-                                child: ClipRRect(borderRadius: BorderRadius.circular(20),child: Image.network(restaurantDetails["imageurl"][index],fit: BoxFit.cover,))
+                                child: ClipRRect(borderRadius: BorderRadius.circular(20),child: Image.network(restaurantDetails.imageurl[index],fit: BoxFit.cover,))
                               ),
                             ),
                             Positioned(
@@ -215,5 +216,6 @@ class RestaurantFoodCard extends StatelessWidget {
         ),
       ),
     );
+    
   }
 }
