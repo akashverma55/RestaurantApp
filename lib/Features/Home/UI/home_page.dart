@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restaurant_app/Data/restaurant_food_data.dart';
 import 'package:restaurant_app/Features/Cart/UI/cart.dart';
 import 'package:restaurant_app/Features/Home/UI/Widget/order_fab.dart';
+import 'package:restaurant_app/Features/Home/UI/Widget/restaurant_card.dart';
 import 'package:restaurant_app/Features/Home/UI/Widget/restaurant_card_details.dart';
 import 'package:restaurant_app/Features/Home/bloc/home_bloc.dart';
 import 'package:restaurant_app/Features/Home/models/restaurant_data_models.dart';
@@ -59,6 +60,8 @@ class _MyHomePageState extends State<MyHomePage> {
             context,
             MaterialPageRoute(builder: (context) => Cart()),
           );
+        } else if(state is HomeProductWishlistedState){
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Your Restaurant Has Been Added To Your WishList")));
         }
       },
       builder: (context, state) {
@@ -271,102 +274,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
 
-class RestaurantCard extends StatefulWidget {
-  const RestaurantCard({super.key, required this.restaurantsDetails, required this.homebloc});
 
-  final RestaurantDataModels restaurantsDetails;
-  final HomeBloc homebloc;
-
-  @override
-  State<RestaurantCard> createState() => _RestaurantCardState();
-}
-
-class _RestaurantCardState extends State<RestaurantCard> {
-  int _currentImageIndex = 0;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 400,
-      margin: EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
-            spreadRadius: 2,
-            blurRadius: 7,
-            offset: Offset(4, 4),
-          ),
-        ],
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Column(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-            child: SizedBox(
-              height: 230,
-              child: Stack(
-                children: [
-                  CarouselSlider(
-                    items: widget.restaurantsDetails.imageurl.map<Widget>((
-                      image,
-                    ) {
-                      return Image.network(
-                        image,
-                        fit: BoxFit.cover,
-                        height: 230,
-                        width: double.infinity,
-                      );
-                    }).toList(),
-                    options: CarouselOptions(
-                      autoPlay: true,
-                      autoPlayInterval: Duration(seconds: 3),
-                      viewportFraction: 1,
-                      enlargeCenterPage: false,
-                      height: 230,
-                      onPageChanged: (index, reason) => setState(() {
-                        _currentImageIndex = index;
-                      }),
-                    ),
-                  ),
-                  Positioned(
-                    top: 10,
-                    left: 10,
-                    child: Container(
-                      padding: EdgeInsets.all(5),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.7),
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: Text(
-                        "${widget.restaurantsDetails.dishname[_currentImageIndex]} - Rs. ${widget.restaurantsDetails.price[_currentImageIndex]}",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    right: 10,
-                    child: IconButton(
-                      onPressed: () {
-                        widget.homebloc.add(HomeProductWishlistButtonClicked());
-                      },
-                      icon: Icon(Icons.bookmark_add_outlined),
-                      color: Colors.white,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          RestaurantCardDetails(restaurantDetails: widget.restaurantsDetails),
-        ],
-      ),
-    );
-  }
-}
 
 class SearchBar extends StatelessWidget {
   const SearchBar({super.key});

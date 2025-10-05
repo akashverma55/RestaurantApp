@@ -29,3 +29,4 @@ class HomeToCart extends HomeAction{}
 class HomeToWishlist extends HomeAction{}
 
 class HomeProductWishlistState extends HomeAction{}
+class HomeProductWishlistedState extends HomeAction{}

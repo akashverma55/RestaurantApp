@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 // ignore: depend_on_referenced_packages
 import 'package:meta/meta.dart';
 import 'package:restaurant_app/Data/restaurant_food_data.dart';
+import 'package:restaurant_app/Data/wishlist_order_data.dart';
 import 'package:restaurant_app/Features/Home/models/restaurant_data_models.dart';
 part 'home_event.dart';
 part 'home_state.dart';
@@ -21,7 +22,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     Emitter<HomeState> emit,
   ) {
     print("Home product wishlist button clicked!");
-    emit(HomeProductWishlistState());
+    print(event.restaurantDataToWishlist.name);
+    WishlistOrderData.wishlistRestaurantList.add(event.restaurantDataToWishlist);
+    emit(HomeProductWishlistedState());
   }
 
   void homeToWishlistButtonClicked(
